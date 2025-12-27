@@ -1,0 +1,127 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+  moduleFormat    = "cjs"
+
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model UserType {
+  id        Int      @id @default(autoincrement())
+  typeName  String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  users     User[]
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  idNumber   String   @unique
+  email      String   @unique
+  firstName  String?
+  lastName   String?
+  password   String
+  phone      String?
+  userType   UserType @relation(fields: [userTypeId], references: [id])
+  userTypeId Int
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  itemRequests AvailabilityRequest[]
+  lendRequests LendRequest[]
+}
+
+model ItemCategory {
+  id          Int      @id @default(autoincrement())
+  categoryName String  @unique
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  items       InventoryItem[]
+}
+
+model Class {
+  id           Int           @id @default(autoincrement())
+  className    String        @unique
+  isActive     Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  lendRequests LendRequest[]
+}
+
+model InventoryItem {
+  id          Int      @id @default(autoincrement())
+  itemName    String
+  description String?
+  quantity    Int      @default(0)
+  category    ItemCategory @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  requests    AvailabilityRequest[]
+  lendRequests LendRequest[]
+}
+
+model AvailabilityRequestStatus {
+  id          Int      @id @default(autoincrement())
+  statusName  String   @unique
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  requests    AvailabilityRequest[]
+}
+
+model AvailabilityRequest {
+  id          Int      @id @default(autoincrement())
+  requester   User     @relation(fields: [requesterId], references: [id])
+  requesterId Int
+  item        InventoryItem @relation(fields: [itemId], references: [id])
+  itemId      Int
+  quantity    Int
+  className   String?  
+  projectName String?  
+  statusId    Int
+  status      AvailabilityRequestStatus @relation(fields: [statusId], references: [id])
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model LendRequestStatus {
+  id          Int      @id @default(autoincrement())
+  statusName  String   @unique
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  requests    LendRequest[]
+}
+model LendRequest {
+  id              Int               @id @default(autoincrement())
+  requester       User              @relation(fields: [requesterId], references: [id])
+  requesterId     Int
+  item            InventoryItem     @relation(fields: [itemId], references: [id])
+  itemId          Int
+  quantity        Int
+  class           Class?            @relation(fields: [classId], references: [id])
+  classId         Int?
+  projectName     String?
+  statusId        Int
+  status          LendRequestStatus @relation(fields: [statusId], references: [id])
+  isActive        Boolean           @default(true)
+  lendDate        DateTime
+  returnDate      DateTime?
+  realReturnDate  DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}
