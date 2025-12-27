@@ -32,5 +32,16 @@ export class InventoryItemService {
             data,
         });
     }
+
+    async updateItem(params: {
+        where: Prisma.InventoryItemWhereUniqueInput;
+        data: Prisma.InventoryItemUpdateInput;
+    }): Promise<InventoryItem> {
+        const { where, data } = params;
+        return this.prisma.inventoryItem.update({
+            data,
+            where,
+        });
+    }
 }
  
