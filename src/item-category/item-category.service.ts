@@ -37,6 +37,16 @@ export class ItemCategoryService {
         });
     }
 
+    async updateCategory(params: {
+        where: Prisma.ItemCategoryWhereUniqueInput;
+        data: Prisma.ItemCategoryUpdateInput;
+    }): Promise<ItemCategory> {
+        const { where, data } = params;
+        return this.prisma.itemCategory.update({
+            data,
+            where,
+        });
+    }
     async deleteCategory(categoryUnique: Prisma.ItemCategoryWhereUniqueInput): Promise<ItemCategory> {
         return this.prisma.itemCategory.delete({
             where: categoryUnique,

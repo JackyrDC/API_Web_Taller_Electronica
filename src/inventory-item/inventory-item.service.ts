@@ -43,5 +43,11 @@ export class InventoryItemService {
             where,
         });
     }
+
+    async deleteItem(where: Prisma.InventoryItemWhereUniqueInput): Promise<InventoryItem> {
+        return this.prisma.inventoryItem.delete({
+            where,
+        });
+    }
 }
  
