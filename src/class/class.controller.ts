@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
 import { ClassService } from './class.service';
 
 @Controller('class')
@@ -7,11 +7,11 @@ export class ClassController {
 
     @Get()
     async getClasses(
-        @Query('skip') skip?: string,
-        @Query('take') take?: string,
-        @Query('cursor') cursor?: string,
-        @Query('where') where?: string,
-        @Query('orderBy') orderBy?: string,
+        @Param('skip') skip?: string,
+        @Param('take') take?: string,
+        @Param('cursor') cursor?: string,
+        @Param('where') where?: string,
+        @Param('orderBy') orderBy?: string,
     ) {
         return this.classService.classes({
             skip: skip ? parseInt(skip) : undefined,
@@ -23,17 +23,17 @@ export class ClassController {
     }
 
     @Get(':id')
-    async getClass(@Query('id') id: string) {
+    async getClass(@Param('id') id: string) {
         return this.classService.class({ id: parseInt(id) });
     }
 
     @Post()
-    async createClass(@Query('data') data: string) {
+    async createClass(@Body('data') data: string) {
         return this.classService.createClass(JSON.parse(data));
     }
 
     @Put(':id')
-    async updateClass(@Query('id') id: string, @Query('data') data: string) {
+    async updateClass(@Param('id') id: string, @Body('data') data: string) {
         return this.classService.updateClass({
             where: { id: parseInt(id) },
             data: JSON.parse(data),
@@ -41,7 +41,7 @@ export class ClassController {
     }
 
     @Delete(':id')
-    async deleteClass(@Query('id') id: string) {        
+    async deleteClass(@Param('id') id: string) {        
         return this.classService.deleteClass({ id: parseInt(id) });
     }
 }
