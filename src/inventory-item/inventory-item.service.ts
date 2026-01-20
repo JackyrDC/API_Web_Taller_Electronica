@@ -1,16 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import {Prisma, InventoryItem} from '../../generated/prisma/client';
+import { Prisma } from '../../generated/prisma/client';
+import { InventoryItem, CreateInventoryItemDtoSimple, UpdateInventoryItemDtoSimple } from '../types/types';
 
 @Injectable()
 export class InventoryItemService {
     constructor(private prisma: PrismaService) {}
 
-    async item(): Promise<InventoryItem[]> {
-        return this.prisma.inventoryItem.findMany();
+    async item(id: number): Promise<InventoryItem | null> {
+        return this.prisma.inventoryItem.findUnique({
+            where: { id },
+        });
     }
 
-    async items(params:{
+    async items(params: {
         skip?: number;
         take?: number;
         cursor?: Prisma.InventoryItemWhereUniqueInput;
@@ -27,26 +30,35 @@ export class InventoryItemService {
         });
     }
 
-    async createItem(data: Prisma.InventoryItemCreateInput): Promise<InventoryItem> {
-        return this.prisma.inventoryItem.create({
-            data,
-        });
+    async createItem(dto: CreateInventoryItemDtoSimple): Promise<InventoryItem> {
+        const data: Prisma.InventoryItemCreateInput = {
+            itemName: dto.itemName,
+            description: dto.description,
+            quantity: dto.quantity,
+            category: { connect: { id: dto.categoryId } },
+            isActive: dto.isActive,
+        };
+        return this.prisma.inventoryItem.create({ data });
     }
 
-    async updateItem(params: {
-        where: Prisma.InventoryItemWhereUniqueInput;
-        data: Prisma.InventoryItemUpdateInput;
-    }): Promise<InventoryItem> {
-        const { where, data } = params;
+    async updateItem(id: number, dto: UpdateInventoryItemDtoSimple): Promise<InventoryItem> {
+        const data: Prisma.InventoryItemUpdateInput = {};
+        
+        if (dto.itemName !== undefined) data.itemName = dto.itemName;
+        if (dto.description !== undefined) data.description = dto.description;
+        if (dto.quantity !== undefined) data.quantity = dto.quantity;
+        if (dto.categoryId !== undefined) data.category = { connect: { id: dto.categoryId } };
+        if (dto.isActive !== undefined) data.isActive = dto.isActive;
+
         return this.prisma.inventoryItem.update({
+            where: { id },
             data,
-            where,
         });
     }
 
-    async deleteItem(where: Prisma.InventoryItemWhereUniqueInput): Promise<InventoryItem> {
+    async deleteItem(id: number): Promise<InventoryItem> {
         return this.prisma.inventoryItem.delete({
-            where,
+            where: { id },
         });
     }
 }

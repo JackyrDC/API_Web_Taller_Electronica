@@ -1,5 +1,6 @@
-import { Controller, Get, Post,Put,Delete, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Query, Param, Body } from '@nestjs/common';
 import { ItemCategoryService } from './item-category.service';
+import { CreateItemCategoryDto, UpdateItemCategoryDto } from '../types/types';
 
 @Controller('item-category')
 export class ItemCategoryController {
@@ -7,11 +8,11 @@ export class ItemCategoryController {
 
     @Get()
     async getCategories(
-        @Param('skip') skip?: string,
-        @Param('take') take?: string,
-        @Param('cursor') cursor?: string,
-        @Param('where') where?: string,
-        @Param('orderBy') orderBy?: string,
+        @Query('skip') skip?: string,
+        @Query('take') take?: string,
+        @Query('cursor') cursor?: string,
+        @Query('where') where?: string,
+        @Query('orderBy') orderBy?: string,
     ) {
         return this.itemCategoryService.categories({
             skip: skip ? parseInt(skip) : undefined,
@@ -24,24 +25,21 @@ export class ItemCategoryController {
 
     @Get(':id')
     async getCategory(@Param('id') id: string) {
-        return this.itemCategoryService.category({ id: parseInt(id) });
+        return this.itemCategoryService.category(parseInt(id));
     }
 
     @Post()
-    async createCategory(@Body('data') data: string) {
-        return this.itemCategoryService.createCategory(JSON.parse(data));
+    async createCategory(@Body() data: CreateItemCategoryDto) {
+        return this.itemCategoryService.createCategory(data);
     }
 
     @Put(':id')
-    async updateCategory(@Param('id') id: string, @Body('data') data: string) {
-        return this.itemCategoryService.updateCategory({
-            where: { id: parseInt(id) },
-            data: JSON.parse(data),
-        });
+    async updateCategory(@Param('id') id: string, @Body() data: UpdateItemCategoryDto) {
+        return this.itemCategoryService.updateCategory(parseInt(id), data);
     }
 
     @Delete(':id')
     async deleteCategory(@Param('id') id: string) {
-        return this.itemCategoryService.deleteCategory({ id: parseInt(id) });
+        return this.itemCategoryService.deleteCategory(parseInt(id));
     }
 }

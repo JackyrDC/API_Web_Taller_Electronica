@@ -1,5 +1,6 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Query, Body, Param } from '@nestjs/common';
 import { ClassService } from './class.service';
+import { CreateClassDto, UpdateClassDto } from '../types/types';
 
 @Controller('class')
 export class ClassController {
@@ -7,11 +8,11 @@ export class ClassController {
 
     @Get()
     async getClasses(
-        @Param('skip') skip?: string,
-        @Param('take') take?: string,
-        @Param('cursor') cursor?: string,
-        @Param('where') where?: string,
-        @Param('orderBy') orderBy?: string,
+        @Query('skip') skip?: string,
+        @Query('take') take?: string,
+        @Query('cursor') cursor?: string,
+        @Query('where') where?: string,
+        @Query('orderBy') orderBy?: string,
     ) {
         return this.classService.classes({
             skip: skip ? parseInt(skip) : undefined,
@@ -24,24 +25,21 @@ export class ClassController {
 
     @Get(':id')
     async getClass(@Param('id') id: string) {
-        return this.classService.class({ id: parseInt(id) });
+        return this.classService.class(parseInt(id));
     }
 
     @Post()
-    async createClass(@Body('data') data: string) {
-        return this.classService.createClass(JSON.parse(data));
+    async createClass(@Body() data: CreateClassDto) {
+        return this.classService.createClass(data);
     }
 
     @Put(':id')
-    async updateClass(@Param('id') id: string, @Body('data') data: string) {
-        return this.classService.updateClass({
-            where: { id: parseInt(id) },
-            data: JSON.parse(data),
-        });
+    async updateClass(@Param('id') id: string, @Body() data: UpdateClassDto) {
+        return this.classService.updateClass(parseInt(id), data);
     }
 
     @Delete(':id')
-    async deleteClass(@Param('id') id: string) {        
-        return this.classService.deleteClass({ id: parseInt(id) });
+    async deleteClass(@Param('id') id: string) {
+        return this.classService.deleteClass(parseInt(id));
     }
 }

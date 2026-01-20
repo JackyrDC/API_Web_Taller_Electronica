@@ -1,14 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import {Prisma, Class} from '../../generated/prisma/client';
+import { Prisma } from '../../generated/prisma/client';
+import { Class, CreateClassDto, UpdateClassDto } from '../types/types';
 
 @Injectable()
 export class ClassService {
     constructor(private prisma: PrismaService) {}
 
-    async class(classUnique: Prisma.ClassWhereUniqueInput): Promise<Class | null> {
+    async class(id: number): Promise<Class | null> {
         return this.prisma.class.findUnique({
-            where: classUnique,
+            where: { id },
         });
     } 
     
@@ -16,10 +17,10 @@ export class ClassService {
         skip?: number;
         take?: number;
         cursor?: Prisma.ClassWhereUniqueInput;
-        where?:Prisma.ClassWhereInput;
-        orderBy?:Prisma.ClassOrderByWithRelationInput;
-    }){
-        const {skip, take, cursor, where, orderBy} = params;
+        where?: Prisma.ClassWhereInput;
+        orderBy?: Prisma.ClassOrderByWithRelationInput;
+    }): Promise<Class[]> {
+        const { skip, take, cursor, where, orderBy } = params;
         return this.prisma.class.findMany({
             skip,
             take,
@@ -29,26 +30,22 @@ export class ClassService {
         });
     }
 
-    async createClass(data: Prisma.ClassCreateInput): Promise<Class> {
+    async createClass(data: CreateClassDto): Promise<Class> {
         return this.prisma.class.create({
             data,
         });
     }
 
-    async updateClass(params: {
-        where: Prisma.ClassWhereUniqueInput;
-        data: Prisma.ClassUpdateInput;  
-    }): Promise<Class> {
-        const {where, data} = params;
+    async updateClass(id: number, data: UpdateClassDto): Promise<Class> {
         return this.prisma.class.update({
+            where: { id },
             data,
-            where,
         });
     }
 
-    async deleteClass(where: Prisma.ClassWhereUniqueInput): Promise<Class> {
+    async deleteClass(id: number): Promise<Class> {
         return this.prisma.class.delete({
-            where,
+            where: { id },
         });
     }
 }

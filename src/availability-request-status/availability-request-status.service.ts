@@ -1,14 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import {Prisma, AvailabilityRequestStatus} from '../../generated/prisma/client';
+import { Prisma } from '../../generated/prisma/client';
+import { 
+    AvailabilityRequestStatus, 
+    CreateAvailabilityRequestStatusDto, 
+    UpdateAvailabilityRequestStatusDto 
+} from '../types/types';
 
 @Injectable()
 export class AvailabilityRequestStatusService {
     constructor(private prisma: PrismaService) {}
 
-    async status(params: { id: number }): Promise<AvailabilityRequestStatus[]> {
-        const { id } = params;
-        return this.prisma.availabilityRequestStatus.findMany({
+    async status(id: number): Promise<AvailabilityRequestStatus | null> {
+        return this.prisma.availabilityRequestStatus.findUnique({
             where: { id },
         });
     }
@@ -30,26 +34,22 @@ export class AvailabilityRequestStatusService {
         });
     }
 
-    async createStatus(data: Prisma.AvailabilityRequestStatusCreateInput): Promise<AvailabilityRequestStatus> {
+    async createStatus(data: CreateAvailabilityRequestStatusDto): Promise<AvailabilityRequestStatus> {
         return this.prisma.availabilityRequestStatus.create({
             data,
         });
     }
 
-    async updateStatus(params: {    
-        where: Prisma.AvailabilityRequestStatusWhereUniqueInput;
-        data: Prisma.AvailabilityRequestStatusUpdateInput;
-    }): Promise<AvailabilityRequestStatus> {    
-        const { where, data } = params;
+    async updateStatus(id: number, data: UpdateAvailabilityRequestStatusDto): Promise<AvailabilityRequestStatus> {    
         return this.prisma.availabilityRequestStatus.update({
-            where,
+            where: { id },
             data,
         });
     }
       
-    async deleteStatus(where: Prisma.AvailabilityRequestStatusWhereUniqueInput): Promise<AvailabilityRequestStatus> {
+    async deleteStatus(id: number): Promise<AvailabilityRequestStatus> {
         return this.prisma.availabilityRequestStatus.delete({
-            where,
+            where: { id },
         });
     }
 }   

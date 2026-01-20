@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Put, Delete, Query, Param, Body } from '@nestjs/common';
 import { AvailabilityRequestStatusService } from './availability-request-status.service';
+import { CreateAvailabilityRequestStatusDto, UpdateAvailabilityRequestStatusDto } from '../types/types';
 
 @Controller('availability-request-status')
 export class AvailabilityRequestStatusController {
@@ -7,11 +8,11 @@ export class AvailabilityRequestStatusController {
 
     @Get()
     async getStatuses(
-        @Param('skip') skip?: string,
-        @Param('take') take?: string,
-        @Param('cursor') cursor?: string,
-        @Param('where') where?: string,
-        @Param('orderBy') orderBy?: string,
+        @Query('skip') skip?: string,
+        @Query('take') take?: string,
+        @Query('cursor') cursor?: string,
+        @Query('where') where?: string,
+        @Query('orderBy') orderBy?: string,
     ){
         return this.availabilityRequestStatusService.statuses({
             skip: skip ? parseInt(skip) : undefined,
@@ -24,25 +25,22 @@ export class AvailabilityRequestStatusController {
 
     @Get(':id')
     async getStatus(@Param('id') id: string) {
-        return this.availabilityRequestStatusService.status({ id: parseInt(id) });
+        return this.availabilityRequestStatusService.status(parseInt(id));
     }
 
     @Post()
-    public async createStatus(@Body() data: any) {
+    async createStatus(@Body() data: CreateAvailabilityRequestStatusDto) {
         return this.availabilityRequestStatusService.createStatus(data);
     }
 
     @Put(':id')
-    public async updateStatus(@Param('id') id: string, @Body() data: any) {
-        return this.availabilityRequestStatusService.updateStatus({
-            where: { id: parseInt(id) },
-            data,
-        });
+    async updateStatus(@Param('id') id: string, @Body() data: UpdateAvailabilityRequestStatusDto) {
+        return this.availabilityRequestStatusService.updateStatus(parseInt(id), data);
     }
 
     @Delete(':id')
-    public async deleteStatus(@Param('id') id: string) {
-        return this.availabilityRequestStatusService.deleteStatus({ id: parseInt(id) });
+    async deleteStatus(@Param('id') id: string) {
+        return this.availabilityRequestStatusService.deleteStatus(parseInt(id));
     }
 
 }

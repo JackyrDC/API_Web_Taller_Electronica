@@ -1,26 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import {Prisma, ItemCategory} from '../../generated/prisma/client';
+import { Prisma } from '../../generated/prisma/client';
+import { ItemCategory, CreateItemCategoryDto, UpdateItemCategoryDto } from '../types/types';
 
 @Injectable()
 export class ItemCategoryService {
     constructor(private prisma: PrismaService) {}
 
-    async category(categoryUnique: Prisma.ItemCategoryWhereUniqueInput): Promise<ItemCategory | null> {
+    async category(id: number): Promise<ItemCategory | null> {
         return this.prisma.itemCategory.findUnique({
-            where: categoryUnique,
+            where: { id },
         });
     }
 
-    async categories(params:
-        {
-            skip?: number;
-            take?: number;
-            cursor?: Prisma.ItemCategoryWhereUniqueInput;
-            where?: Prisma.ItemCategoryWhereInput;
-            orderBy?: Prisma.ItemCategoryOrderByWithRelationInput;
-        }
-    ): Promise<ItemCategory[]> {
+    async categories(params: {
+        skip?: number;
+        take?: number;
+        cursor?: Prisma.ItemCategoryWhereUniqueInput;
+        where?: Prisma.ItemCategoryWhereInput;
+        orderBy?: Prisma.ItemCategoryOrderByWithRelationInput;
+    }): Promise<ItemCategory[]> {
         const { skip, take, cursor, where, orderBy } = params;
         return this.prisma.itemCategory.findMany({
             skip,
@@ -31,25 +30,22 @@ export class ItemCategoryService {
         });
     }
 
-    async createCategory(data: Prisma.ItemCategoryCreateInput): Promise<ItemCategory> {
+    async createCategory(data: CreateItemCategoryDto): Promise<ItemCategory> {
         return this.prisma.itemCategory.create({
             data,
         });
     }
 
-    async updateCategory(params: {
-        where: Prisma.ItemCategoryWhereUniqueInput;
-        data: Prisma.ItemCategoryUpdateInput;
-    }): Promise<ItemCategory> {
-        const { where, data } = params;
+    async updateCategory(id: number, data: UpdateItemCategoryDto): Promise<ItemCategory> {
         return this.prisma.itemCategory.update({
+            where: { id },
             data,
-            where,
         });
     }
-    async deleteCategory(categoryUnique: Prisma.ItemCategoryWhereUniqueInput): Promise<ItemCategory> {
+
+    async deleteCategory(id: number): Promise<ItemCategory> {
         return this.prisma.itemCategory.delete({
-            where: categoryUnique,
+            where: { id },
         });
     }
 }
